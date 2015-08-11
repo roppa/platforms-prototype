@@ -41,5 +41,32 @@ var Display = (function(){
     });
   };
 
+  /*
+    .setPlayerConnectionHandler
+    params: callback
+    returns: (nothing)
+    description:
+      Sets the 'callback' function that will be called each time a player connects.
+    author: Rene Loperena
+  */
+  Display.prototype.setPlayerConnectionHandler = function(callback){
+    this.io.on('playerConnect', function(clientId){
+      callback(clientId);
+    });
+  }
+
+  /*
+    .setPlayerDisconnectionHandler
+    params: callback
+    returns: (nothing)
+    description:
+      Sets the 'callback' function that will be called each time a player disconnects.
+    author: Rene Loperena
+  */
+  Display.prototype.setPlayerDisconnectionHandler = function(callback){
+    this.io.on('playerDisconnect', function(clientId){
+      callback(clientId);
+    });
+  }
   return Display;
 })();
