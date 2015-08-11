@@ -1,0 +1,6 @@
+{
+  "src_files": [
+    "lib/**/*.js",
+    "test/**/*.js"
+  ]
+}

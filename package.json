@@ -1,0 +1,33 @@
+{
+  "name": "game-prototype",
+  "version": "1.0.0",
+  "description": "Game prototype for Greensfield project",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/underground-robot/game-prototype.git"
+  },
+  "keywords": [
+    "Game",
+    "Multiplayer",
+    "Socket.io",
+    "Express"
+  ],
+  "author": "Underground-robot",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/underground-robot/game-prototype/issues"
+  },
+  "homepage": "https://github.com/underground-robot/game-prototype#readme",
+  "dependencies": {
+    "express": "^4.13.3",
+    "morgan": "^1.6.1",
+    "socket.io": "^1.3.6",
+    "underscore": "^1.8.3"
+  },"devDependencies":{
+    
+  }
+}

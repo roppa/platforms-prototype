@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="js/socket.io.js"></script>
+  <script src="js/communication/display.js"></script>
+  <script type="text/javascript">
+  var display = new Display();
+  display.connect();
+  display.setInformationHandler(function(data){
+    console.log(JSON.stringify(data));
+  });
+  </script>
+
+</head>
+<body>
+
+</body>
+</html>
