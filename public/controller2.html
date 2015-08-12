@@ -6,6 +6,7 @@
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>
     <link rel='stylesheet' type='text/css' href='css/main.css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <script src='js/socket.io.js'></script>
     <script src='js/communication/controller.js'></script>
     <script src='js/interact.min.js'></script>
@@ -13,21 +14,20 @@
     <script type="text/javascript" src="game.js"></script>
   </head>
 
-  <body>
+  <body oncopy="return false" oncut="return false" onpaste="return false">
     
     <div id='background'>
       <img id="rotate" src="assets/rotate.png">
       <div id="container">
-        <div id="joystick__container">
-          <div id="joystick__button">
-          </div>
-        </div>
         <div id="button__container">
-          <div id="button__b" class="button">
-            <p class="button__name">B</p>
+          <div id="button__left" class="button">
+            <i class="fa fa-caret-square-o-left"></i>
+          </div>
+          <div id="button__right" class="button">
+            <i class="fa fa-caret-square-o-right"></i>
           </div>
           <div id="button__a" class="button">
-            <p class="button__name">A</p>
+            <i class="fa fa-arrow-circle-o-up"></i>
           </div>
         </div>
       </div>

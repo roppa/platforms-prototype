@@ -2,18 +2,16 @@
 <html>
 <head>
   <title></title>
+  <link rel="stylesheet" type="text/css" href="css/main.css">
   <script src="js/socket.io.js"></script>
   <script src="js/communication/display.js"></script>
-  <script type="text/javascript">
-  var display = new Display();
-  display.connect();
-  display.setInformationHandler(function(data){
-    console.log(JSON.stringify(data));
-  });
-  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="js/phaser.min.js"></script>
+  <script src="game.js"></script>
 
 </head>
 <body>
-
+  <div id="game">
+  </div>
 </body>
 </html>
