@@ -106,10 +106,9 @@ setInterval(function(){
    the character to jump. 
   author: Alex Leonetti
 */
-$('#button__a').on('touchstart', function() {
-  $(this).css('background-color', 'pink');
+$('#button__a i').on('touchstart', function() {
+  $(this).css('color', 'pink');
   controller.pressA();
-
 });
 
 
@@ -119,10 +118,34 @@ $('#button__a').on('touchstart', function() {
    When the A button is not being touched it changes the Y position back to 0. 
   author: Alex Leonetti
 */
-$('#button__a').on('touchend', function() {
-  $(this).css('background-color', 'inherit');
+
+
+$('#button__a i').on('touchend', function() {
+  $(this).css('color', 'white');
   controller.releaseA();
 });
+
+$('#button__left i').on('touchstart', function() {
+  $(this).css('color', 'pink');
+  posX = -100;
+});
+
+$('#button__left i').on('touchend', function() {
+  $(this).css('color', 'white');
+  posX = 0;
+});
+
+$('#button__right i').on('touchstart', function() {
+  $(this).css('color', 'pink');
+  posX = 100;
+});
+
+$('#button__right i').on('touchend', function() {
+  $(this).css('color', 'white');
+  posX = 0;
+});
+
+
 
 /*
   button touchstart click
