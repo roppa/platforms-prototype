@@ -33,6 +33,11 @@ var orangeDinoInterval;
 var purpleDinos;
 var purpleDinoInterval;
 
+var music;
+var musicArray = ['fox', 'gorillaz', 'lucky'];
+var randomSong = Math.floor(Math.random()*3);
+var musicReset = false;
+
 var updatePosition = function(positionArray) {
 
   for(var i=0; i<positionArray.length; i++) {
@@ -57,6 +62,7 @@ display.setInformationHandler(updatePosition);
 
 var state = {
   preload: function() {
+    console.log(this)
     this.load.image("platform", "assets/platform.png");
     this.load.image("falling", "assets/falling.png");
     this.load.image("negative", "assets/negative.png");
@@ -67,8 +73,20 @@ var state = {
     this.load.spritesheet("orangeDino", "assets/orange-dino.png", 34.5, 42);
     this.load.spritesheet("purpleDino", "assets/purple-dino.png", 118, 150);
     this.load.image('water', 'assets/water.png');
+    this.load.audio('fox', ['assets/sounds/fox.mp3']);
+    this.load.audio('gorillaz', ['assets/sounds/gorillaz.mp3']);
+    this.load.audio('lucky', ['assets/sounds/lucky.mp3']);
   },
   create: function() {
+
+    music = game.add.audio(musicArray[randomSong]);
+    music.play();
+    //   musicReset = false;
+
+    // music.restart();
+    // music.onStop.add(music.restart, this);
+    // music.loop = true;
+
     this.physics.startSystem(Phaser.Physics.ARCADE);
 
     this.background = this.add.tileSprite(0,0, this.world.width, this.world.height, 'background');
@@ -119,12 +137,12 @@ var state = {
 
     if(this.level === 'ground') {
       orangeDinos.forEach(function(o) {
-        if(o.body.x < -100) {
+        if(o && o.body.x < -100) {
           o.kill();
         }
       });
       purpleDinos.forEach(function(p) {
-        if(p.body.x < -150) {
+        if(p && p.body.x < -150) {
           p.kill();
         }
       });
@@ -212,6 +230,11 @@ var state = {
     purpleDinos.removeAll();
     this.gameStarted = false;
     this.gameOver = false;
+    if(musicReset === true) {
+      musicReset = false;
+      music.play();
+    }
+
 
     // this.input.onDown.removeAll();    
     // this.input.onDown.add(this.move, this);
@@ -297,6 +320,16 @@ var state = {
     this.player.body.velocity.x = 0;
     this.player.body.velocity.y = 0;
     this.player.animations.play('still'); 
+
+    if(randomSong === 2) {
+      randomSong = 0;
+    } else {
+      randomSong++
+    }
+    musicReset = true;
+    music.stop();
+    music = game.add.audio(musicArray[randomSong]);
+
     // this.input.onDown.removeAll();
     // this.input.onDown.add(this.reset, this);
   },
