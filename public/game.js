@@ -5,6 +5,13 @@ var DEAD_PLAYER_X = 1;
 var POS_X = 0;
 var POS_Y = 0;
 var BUTTON_A = false;
+var RESET = false;
+var RESETGAMEOVER = false;
+var GAMECONTEXT;
+var PLAYERS_ARRAY = [];
+
+
+var players;
 
 var water;
 var waterInterval;
@@ -27,10 +34,21 @@ var purpleDinos;
 var purpleDinoInterval;
 
 var updatePosition = function(positionArray) {
-  POS_X = positionArray[0].data.velocity.x;
-  POS_Y = positionArray[0].data.velocity.y;
-  BUTTON_A = positionArray[0].data.a;
-  console.log(POS_X, POS_Y, BUTTON_A);
+
+  for(var i=0; i<positionArray.length; i++) {
+    if(positionArray && positionArray[i]) {
+      POS_X = positionArray[i].data.velocity.x;
+      POS_Y = positionArray[i].data.velocity.y;
+      BUTTON_A = positionArray[i].data.a;
+      console.log(POS_X, POS_Y, BUTTON_A);
+      if(RESET && BUTTON_A) {
+        GAMECONTEXT.move();
+      }
+      if(RESETGAMEOVER && BUTTON_A) {
+        GAMECONTEXT.reset();
+      }
+    }
+  }
 };
 
 var display = new Display();
@@ -56,7 +74,10 @@ var state = {
     this.background = this.add.tileSprite(0,0, this.world.width, this.world.height, 'background');
     this.background.autoScroll(-SPEED,0);
 
-    this.player = this.add.sprite(0,0,'player');
+    players = game.add.group();
+    players.enableBody = true;
+
+    this.player = players.create(0,0,'player');
     this.player.animations.add('left', [8,7,6,5], 10, true);
     this.player.animations.add('right', [1,2,3,4], 10, true);
     this.player.animations.add('still', [0], 10, true);
@@ -91,9 +112,9 @@ var state = {
   },
   update: function() {
 
-    this.physics.arcade.collide(this.player, platforms);
-    this.physics.arcade.collide(this.player, orangeDinos, this.setGameOver, null, this);
-    this.physics.arcade.collide(this.player, purpleDinos, this.setGameOver, null, this);
+    this.physics.arcade.collide(players, platforms);
+    this.physics.arcade.collide(players, orangeDinos, this.setGameOver, null, this);
+    this.physics.arcade.collide(players, purpleDinos, this.setGameOver, null, this);
 
 
     if(this.level === 'ground') {
@@ -128,6 +149,8 @@ var state = {
       this.player.body.velocity.x = -250;
     } else if (POS_X > 50 && this.player.body.x<750 && !this.player.dead) {
       this.player.body.velocity.x = 250;
+    } else if (POS_X === 0 && !this.player.body.touching.down && !this.player.dead) {
+      this.player.body.velocity.x = -99;
     } else {
       this.player.body.velocity.x = 0;
     }
@@ -142,7 +165,7 @@ var state = {
     if(this.gameStarted){
       if(this.player.body.velocity.x > 0 && this.player.body.x<770){
         this.player.animations.play('right');
-      } else if(this.player.body.velocity.x < 0 && this.player.body.x>10){
+      } else if(this.player.body.velocity.x < -99 && this.player.body.x>10){
         this.player.animations.play('left');
       } else if(this.player.body.x <= 10) {
         this.player.animations.play('right');
@@ -164,6 +187,8 @@ var state = {
     }
   },
   reset:function() {
+    BUTTON_A = false;
+    GAMECONTEXT = this;
 
     clearInterval(waterInterval);
     clearInterval(platformInterval);
@@ -178,6 +203,8 @@ var state = {
     clearTimeout(groundTimeout);
     clearTimeout(flyTimeout);
 
+    
+
     this.player.dead = false;
     platforms.removeAll();
     water.removeAll();
@@ -186,8 +213,8 @@ var state = {
     this.gameStarted = false;
     this.gameOver = false;
 
-    this.input.onDown.removeAll();    
-    this.input.onDown.add(this.move, this);
+    // this.input.onDown.removeAll();    
+    // this.input.onDown.add(this.move, this);
 
     this.player.reset(this.world.width / 4, 487);
     this.player.dead = true;
@@ -199,7 +226,11 @@ var state = {
 
     this.background.autoScroll(-SPEED * .30 ,0);
 
-    this.scoreText.setText("TOUCH TO\nSTART GAME");
+    this.scoreText.setText("PRESS + TO ADD PLAYER\n\nPRESS JUMP TO\nSTART GAME");
+
+    setTimeout(function() {
+      RESET = true;
+    }, 1000);
 
   },
   start: function() {  
@@ -228,6 +259,22 @@ var state = {
   },
   move: function(){
     if(!this.gameStarted){
+      clearInterval(waterInterval);
+      clearInterval(platformInterval);
+      clearInterval(platformFallingInterval);
+      clearInterval(platformNegativeInterval);
+
+      clearInterval(platformFloatingInterval);
+      clearInterval(purpleDinoInterval);
+      clearInterval(orangeDinoInterval);
+
+      clearTimeout(waterTimeout);
+      clearTimeout(groundTimeout);
+      clearTimeout(flyTimeout);
+
+      RESET = false;
+      RESETGAMEOVER = false;
+
       this.lastNum = 500;
       this.start();
     }
@@ -237,9 +284,11 @@ var state = {
     }
   },
   setGameOver: function() {
+    RESETGAMEOVER = true;
+
     this.gameOver = true;
     this.gameStarted = false;
-    this.scoreText.setText("TOUCH TO\nTRY AGAIN");
+    this.scoreText.setText("PRESS JUMP TO\nTRY AGAIN");
     this.background.autoScroll(0, 0);
     this.player.dead = true;
     this.player.body.x = (32 * DEAD_PLAYER_X);
@@ -248,8 +297,8 @@ var state = {
     this.player.body.velocity.x = 0;
     this.player.body.velocity.y = 0;
     this.player.animations.play('still'); 
-    this.input.onDown.removeAll();
-    this.input.onDown.add(this.reset, this);
+    // this.input.onDown.removeAll();
+    // this.input.onDown.add(this.reset, this);
   },
   spawnPlatform: function() {
     this.ledge = platforms.create(800, this.generateRandomY(), 'platform');

@@ -107,7 +107,7 @@ setInterval(function(){
   author: Alex Leonetti
 */
 $('#button__a i').on('touchstart', function() {
-  $(this).css('color', 'pink');
+  $(this).css('color', '#FAEB74');
   controller.pressA();
 });
 
@@ -126,7 +126,7 @@ $('#button__a i').on('touchend', function() {
 });
 
 $('#button__left i').on('touchstart', function() {
-  $(this).css('color', 'pink');
+  $(this).css('color', '#FAEB74');
   posX = -100;
 });
 
@@ -136,7 +136,7 @@ $('#button__left i').on('touchend', function() {
 });
 
 $('#button__right i').on('touchstart', function() {
-  $(this).css('color', 'pink');
+  $(this).css('color', '#FAEB74');
   posX = 100;
 });
 
@@ -154,10 +154,8 @@ $('#button__right i').on('touchend', function() {
    the character to jump. 
   author: Alex Leonetti
 */
-$('#button__b').on('touchstart click', function() {
-  $(this).css('background-color', 'pink');
-  controller.pressB();
-
+$('#button__b i').on('touchstart', function() {
+  $(this).css('color', '#FAEB74');
 });
 
 
@@ -167,7 +165,6 @@ $('#button__b').on('touchstart click', function() {
    When the B button is not being touched it changes the Y position back to 0. 
   author: Alex Leonetti
 */
-$('#button__b').on('touchend click', function() {
-  $(this).css('background-color', 'inherit');
-  controller.releaseB();
+$('#button__b i').on('touchend', function() {
+  $(this).css('color', 'white');
 });
