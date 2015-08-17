@@ -33,8 +33,10 @@ var orangeDinoInterval;
 var purpleDinos;
 var purpleDinoInterval;
 
+
 var fishes;
 var fishInterval;
+
 
 var music;
 var musicArray = ['fox', 'gorillaz', 'lucky'];
@@ -67,6 +69,7 @@ display.setInformationHandler(updatePosition);
 
 var state = {
   preload: function() {
+    console.log(this)
     this.load.image("platform", "assets/platform.png");
     this.load.image("falling", "assets/falling.png");
     this.load.image("negative", "assets/negative.png");
@@ -254,6 +257,18 @@ var state = {
     fishes.removeAll();
     this.gameStarted = false;
     this.gameOver = false;
+    if(musicReset === true) {
+      musicLoop = true;
+      musicReset = false;
+      music.play();
+
+      music.onStop.add(function(){
+        if(musicLoop === true) {
+          music.play()
+        }  
+      }, this);
+    }
+
 
     if(musicReset === true) {
       musicLoop = true;
