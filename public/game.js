@@ -37,6 +37,9 @@ var music;
 var musicArray = ['fox', 'gorillaz', 'lucky'];
 var randomSong = Math.floor(Math.random()*3);
 var musicReset = false;
+var musicLoop = true;
+var jumpEffect;
+var deadEffect;
 
 var updatePosition = function(positionArray) {
 
@@ -76,6 +79,8 @@ var state = {
     this.load.audio('fox', ['assets/sounds/fox.mp3']);
     this.load.audio('gorillaz', ['assets/sounds/gorillaz.mp3']);
     this.load.audio('lucky', ['assets/sounds/lucky.mp3']);
+    this.load.audio('dead', ['assets/sounds/dead.mp3']);
+    this.load.audio('jump', ['assets/sounds/jump.mp3']);
   },
   create: function() {
 
@@ -84,7 +89,12 @@ var state = {
     //   musicReset = false;
 
     // music.restart();
-    // music.onStop.add(music.restart, this);
+    music.onStop.add(function(){
+      if(musicLoop === true) {
+        music.play()
+      }  
+    }, this);
+    // music.onStop.add(music.play);
     // music.loop = true;
 
     this.physics.startSystem(Phaser.Physics.ARCADE);
@@ -175,6 +185,8 @@ var state = {
 
     if(BUTTON_A && this.player.body.touching.down && !this.player.dead) {
       this.player.body.velocity.y = -600;
+      jumpEffect = game.add.audio('jump');
+      jumpEffect.play();
     }
     
  
@@ -231,8 +243,15 @@ var state = {
     this.gameStarted = false;
     this.gameOver = false;
     if(musicReset === true) {
+      musicLoop = true;
       musicReset = false;
       music.play();
+
+      music.onStop.add(function(){
+        if(musicLoop === true) {
+          music.play()
+        }  
+      }, this);
     }
 
 
@@ -321,12 +340,16 @@ var state = {
     this.player.body.velocity.y = 0;
     this.player.animations.play('still'); 
 
+    deadEffect = game.add.audio('dead');
+    deadEffect.play();
+
     if(randomSong === 2) {
       randomSong = 0;
     } else {
       randomSong++
     }
     musicReset = true;
+    musicLoop = false;
     music.stop();
     music = game.add.audio(musicArray[randomSong]);
 
