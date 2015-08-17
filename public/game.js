@@ -1,3 +1,10 @@
+/*
+  variable declarations
+  Description:
+   the global variables we need access to in order to change the velocity of our character and a few others. 
+  author: Alex Leonetti
+*/
+
 var SPEED = 100;
 var GRAVITY = 900;
 var LOAD_PLAYER_BOL = false;
@@ -10,6 +17,14 @@ var RESETGAMEOVER = false;
 var GAMECONTEXT;
 var PLAYERS_ARRAY = [];
 
+
+/*
+  variable declarations
+  Description:
+   These global variables are necessary in order to clear intervals and timeouts when a level is over, as well as 
+   when a player dies. 
+  author: Alex Leonetti
+*/
 
 var players;
 
@@ -46,6 +61,13 @@ var musicLoop = true;
 var jumpEffect;
 var deadEffect;
 
+/*
+  updatePosition
+  Description:
+   This is what constantly updates POS_X and POS_Y allowing our player to move 
+  author: Alex Leonetti
+*/
+
 var updatePosition = function(positionArray) {
 
   for(var i=0; i<positionArray.length; i++) {
@@ -63,11 +85,32 @@ var updatePosition = function(positionArray) {
   }
 };
 
+/*
+  display
+  Description:
+   Creates a new display object, connects it to the server, and sets up the updatePosition function
+   as the handler for every communciation event 
+  author: Alex Leonetti
+*/
 var display = new Display();
 display.connect();
 display.setInformationHandler(updatePosition);
 
+
+/*
+  state
+  Description:
+   The state object of a phaser game typically holds a preload, create, and update function. 
+  author: Alex Leonetti
+*/
 var state = {
+
+  /*
+    preload
+    Description:
+     Loads our assets, spritesheets, and images 
+    author: Alex Leonetti
+  */
   preload: function() {
     console.log(this)
     this.load.image("platform", "assets/platform.png");
@@ -87,39 +130,73 @@ var state = {
     this.load.audio('dead', ['assets/sounds/dead.mp3']);
     this.load.audio('jump', ['assets/sounds/jump.mp3']);
   },
+
+  /*
+    create
+    Description:
+     Adds the assets into the game on load
+    author: Alex Leonetti
+  */
   create: function() {
 
     music = game.add.audio(musicArray[randomSong]);
     music.play();
-    //   musicReset = false;
-
-    // music.restart();
+  
     music.onStop.add(function(){
       if(musicLoop === true) {
         music.play()
       }  
     }, this);
-    // music.onStop.add(music.play);
-    // music.loop = true;
+   
 
+    /*
+      physics
+      Description:
+       This statement allows the physics engine to be a part of our game
+      author: Alex Leonetti
+    */
     this.physics.startSystem(Phaser.Physics.ARCADE);
 
+    /*
+      background
+      Description:
+       Creates an autoscrolling world, however the assets in the world do not move automatically
+      author: Alex Leonetti
+    */
     this.background = this.add.tileSprite(0,0, this.world.width, this.world.height, 'background');
     this.background.autoScroll(-SPEED,0);
 
+    /*
+      players
+      Description:
+       Put the players in a group object for future optimization and multiplayer ability.
+       Not being used now.
+      author: Alex Leonetti
+    */
     players = game.add.group();
     players.enableBody = true;
 
+    /*
+      player
+      Description:
+       Creates the player and adds the animations depending on the position in the sprite sheet
+      author: Alex Leonetti
+    */
     this.player = players.create(0,0,'player');
     this.player.animations.add('left', [8,7,6,5], 10, true);
     this.player.animations.add('right', [1,2,3,4], 10, true);
     this.player.animations.add('still', [0], 10, true);
-    // this.player.animations.add('standing', [0,1,2,1,0,0,0], 10, true);
     this.physics.arcade.enableBody(this.player);
 
-
+    /*
+      platforms
+      Description:
+       Object created that holds all types of platforms a player can jump on
+      author: Alex Leonetti
+    */
     platforms = game.add.group();
     platforms.enableBody = true;   
+
 
     water = game.add.group();
     water.enableBody = true; 
@@ -130,6 +207,12 @@ var state = {
     fishes = game.add.group();
 
 
+    /*
+      text
+      Description:
+       This adds text to a phaser game
+      author: Alex Leonetti
+    */
     this.scoreText = this.add.text(
       this.world.centerX,
       this.world.height/2,
@@ -143,16 +226,42 @@ var state = {
 
     this.scoreText.anchor.setTo(0.5, 0.5);
 
+    /*
+      reset
+      Description:
+       Allows the game to load the reset state first when it is created
+      author: Alex Leonetti
+    */
     this.reset();
   },
+
+  /*
+    update
+    Description:
+     Constantly called by the phaser engine updating all aspects of the game
+    author: Alex Leonetti
+  */
   update: function() {
 
+    /*
+      collide
+      Description:
+       Phaser has collision detection already, here we declare what the players can collide with
+       and what happens when you collide
+      author: Alex Leonetti
+    */
     this.physics.arcade.collide(players, platforms);
     this.physics.arcade.collide(players, orangeDinos, this.setGameOver, null, this);
     this.physics.arcade.collide(players, purpleDinos, this.setGameOver, null, this);
     this.physics.arcade.collide(players, fishes, this.setGameOver, null, this);
 
-
+    /*
+      kill()
+      Description:
+       Kill gets rid of the object in the game. Depending on the level we destroy all objects
+       once they are off of the screen.
+      author: Alex Leonetti
+    */
     if(this.level === 'ground') {
       orangeDinos.forEach(function(o) {
         if(o && o.body.x < -100) {
@@ -185,7 +294,12 @@ var state = {
     }
 
 
-    // cursors = this.input.keyboard.createCursorKeys();
+    /*
+      Velocity
+      Description:
+        Updates the character's velocity in game
+      author: Alex Leonetti
+    */
     if (POS_X < -50 && this.player.body.x>1 && !this.player.dead){
       this.player.body.velocity.x = -250;
     } else if (POS_X > 50 && this.player.body.x<750 && !this.player.dead) {
@@ -204,7 +318,12 @@ var state = {
     
  
 
-
+    /*
+      animations
+      Description:
+        Depending on the velocity of the character it will change character animations
+      author: Alex Leonetti
+    */
     if(this.gameStarted){
       if(this.player.body.velocity.x > 0 && this.player.body.x<770){
         this.player.animations.play('right');
@@ -218,6 +337,14 @@ var state = {
       }
     }
 
+
+    /*
+      GameOver
+      Description:
+        If player falls below the bottom of the world setGameOver. Do the same if the player is touching
+        a platform above the world's top.
+      author: Alex Leonetti
+    */
     if(!this.gameOver){
       if(this.player.body.bottom >= this.world.bounds.bottom + 48){
         this.player.dead = true;
@@ -229,6 +356,14 @@ var state = {
       }
     }
   },
+
+  /*
+    Reset
+    Description:
+      The loading screen, must clear all intervals and timeouts in order for game to function correctly.
+      Must also remove all group objects so the game starts from scratch.
+    author: Alex Leonetti
+  */
   reset:function() {
     BUTTON_A = false;
     GAMECONTEXT = this;
@@ -257,18 +392,6 @@ var state = {
     fishes.removeAll();
     this.gameStarted = false;
     this.gameOver = false;
-    if(musicReset === true) {
-      musicLoop = true;
-      musicReset = false;
-      music.play();
-
-      music.onStop.add(function(){
-        if(musicLoop === true) {
-          music.play()
-        }  
-      }, this);
-    }
-
 
     if(musicReset === true) {
       musicLoop = true;
@@ -283,8 +406,18 @@ var state = {
     }
 
 
-    // this.input.onDown.removeAll();    
-    // this.input.onDown.add(this.move, this);
+    if(musicReset === true) {
+      musicLoop = true;
+      musicReset = false;
+      music.play();
+
+      music.onStop.add(function(){
+        if(musicLoop === true) {
+          music.play()
+        }  
+      }, this);
+    }
+
 
     this.player.reset(this.world.width / 4, 487);
     this.player.dead = true;
@@ -303,6 +436,15 @@ var state = {
     }, 1000);
 
   },
+
+  /*
+    Start / Move
+    Description:
+      When called will start the game,
+      loads the first level, sets timeouts for each corresponding level,
+      clears the timeouts on death
+    author: Alex Leonetti
+  */
   start: function() {  
     var context = this;
 
@@ -353,6 +495,13 @@ var state = {
       this.reset();
     }
   },
+
+  /*
+    setGameOver
+    Description:
+      Restores variables
+    author: Alex Leonetti
+  */
   setGameOver: function() {
     RESETGAMEOVER = true;
 
@@ -384,6 +533,13 @@ var state = {
     // this.input.onDown.removeAll();
     // this.input.onDown.add(this.reset, this);
   },
+
+  /*
+    spawnPlatforms / spawnFish / spawnDinos
+    Description:
+      These all generate the corresponding items
+    author: Alex Leonetti
+  */
   spawnPlatform: function() {
     this.ledge = platforms.create(800, this.generateRandomY(), 'platform');
     this.ledge.body.immovable = true;
@@ -418,6 +574,13 @@ var state = {
     },3315);
     
   },
+
+  /*
+    generateRandomY
+    Description:
+      The function to spawn platforms within jumping range and able to fill entire screen
+    author: Alex Leonetti
+  */
   generateRandomY: function() {
     this.lastNum = this.lastNum || 500;
     this.lastNum = this.lastNum +  (Math.random() * 300 - 100);
@@ -429,6 +592,13 @@ var state = {
     }
     return this.lastNum;
   },
+
+  /*
+    generateRandomGreaterY
+    Description:
+      The function to spawn platforms within jumping range and stays on the upper part of the screen
+    author: Alex Leonetti
+  */
   generateRandomGreaterY: function() {
     this.lastGreaterNum = this.lastGreaterNum || 450;
     this.lastGreaterNum = this.lastGreaterNum +  (Math.random() * 200 - 100);
@@ -458,14 +628,22 @@ var state = {
   },
   spawnFish: function() {
     this.fish = fishes.create(700, 650, 'fish');
-    this.fish.animations.add('walk', [0,1], 10, true);
-    this.fish.animations.play('walk');
+    this.fish.animations.add('fly', [0,1], 10, true);
+    this.fish.animations.play('fly');
     this.physics.arcade.enableBody(this.fish);
     this.fish.body.immovable = true;
     this.fish.body.velocity.y = -900;
     this.fish.body.velocity.x = -SPEED;
     this.fish.body.gravity.y = GRAVITY;
   },
+
+
+  /*
+    levelWater
+    Description:
+      Everything spawned for the water level
+    author: Alex Leonetti
+  */
   levelWater: function() {
     this.level = 'water';
 
@@ -502,6 +680,15 @@ var state = {
       }, 3500);
     } 
   },
+
+
+
+  /*
+    levelGround
+    Description:
+      Everything spawned for the ground level
+    author: Alex Leonetti
+  */
   levelGround: function() {
     this.level = 'ground';
     var context = this;
@@ -534,12 +721,26 @@ var state = {
     }, 5000);
 
   },
+
+  /*
+    levelFly
+    Description:
+      Everything spawned for the water level and planning on adding other enemies
+    author: Alex Leonetti
+  */
   levelFly: function() {
     var context = this;
     this.levelWater();
   }
 }
 
+/*
+  game
+  Description:
+    The creation of the actual game.
+    Uses the state object within the phaser game.
+  author: Alex Leonetti
+*/
 var game = new Phaser.Game(
   800,
   600,
