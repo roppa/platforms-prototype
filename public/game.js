@@ -139,6 +139,14 @@ var state = {
   */
   create: function() {
 
+  /*
+    music
+    Description:
+     Adds one of the three songs from the array randomly.
+     Loop starts when song ends.
+    author: Brian Chu
+  */
+
     music = game.add.audio(musicArray[randomSong]);
     music.play();
   
@@ -393,18 +401,13 @@ var state = {
     this.gameStarted = false;
     this.gameOver = false;
 
-    if(musicReset === true) {
-      musicLoop = true;
-      musicReset = false;
-      music.play();
-
-      music.onStop.add(function(){
-        if(musicLoop === true) {
-          music.play()
-        }  
-      }, this);
-    }
-
+    /*
+      Music Reset
+      Description:
+        musicReset set to false to prevent music.play() from being called again.
+        Music plays from here on reset of the game.
+      author: Brian Chu
+    */
 
     if(musicReset === true) {
       musicLoop = true;
@@ -520,11 +523,25 @@ var state = {
     deadEffect = game.add.audio('dead');
     deadEffect.play();
 
+    /*
+      Music Stop
+      Description:
+       Checks musicArray index, randomSong. Increases to the next song, or starts back at 0 if index is at the end.
+      author: Brian Chu
+    */
     if(randomSong === 2) {
       randomSong = 0;
     } else {
       randomSong++
     }
+
+    /*
+      musicReset
+      Description:
+       musicReset set to true to allow music to be played inside the "reset" function.
+       musicLoop set to false to prevent music from playing music.onStop in the "create" function.
+      author: Brian Chu
+    */
     musicReset = true;
     musicLoop = false;
     music.stop();
