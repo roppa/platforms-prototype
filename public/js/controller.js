@@ -97,7 +97,7 @@ window.dragMoveListener = dragMoveListener;
 */
 setInterval(function(){
   controller.updateVelocity(posX, posY);
-}, 20);
+}, 25);
 
 /*
   button touchstart click

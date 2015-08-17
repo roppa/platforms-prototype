@@ -33,6 +33,11 @@ var orangeDinoInterval;
 var purpleDinos;
 var purpleDinoInterval;
 
+
+var fishes;
+var fishInterval;
+
+
 var music;
 var musicArray = ['fox', 'gorillaz', 'lucky'];
 var randomSong = Math.floor(Math.random()*3);
@@ -48,7 +53,6 @@ var updatePosition = function(positionArray) {
       POS_X = positionArray[i].data.velocity.x;
       POS_Y = positionArray[i].data.velocity.y;
       BUTTON_A = positionArray[i].data.a;
-      console.log(POS_X, POS_Y, BUTTON_A);
       if(RESET && BUTTON_A) {
         GAMECONTEXT.move();
       }
@@ -73,6 +77,7 @@ var state = {
     this.load.image("background", "assets/background.jpg");
     this.load.image("floating", "assets/floating.png");
     this.load.spritesheet("player", "assets/hero.png", 33.16, 49);
+    this.load.spritesheet("fish", "assets/fish.png", 30, 40);
     this.load.spritesheet("orangeDino", "assets/orange-dino.png", 34.5, 42);
     this.load.spritesheet("purpleDino", "assets/purple-dino.png", 118, 150);
     this.load.image('water', 'assets/water.png');
@@ -122,6 +127,8 @@ var state = {
     purpleDinos = game.add.group();
     orangeDinos = game.add.group();
 
+    fishes = game.add.group();
+
 
     this.scoreText = this.add.text(
       this.world.centerX,
@@ -143,6 +150,7 @@ var state = {
     this.physics.arcade.collide(players, platforms);
     this.physics.arcade.collide(players, orangeDinos, this.setGameOver, null, this);
     this.physics.arcade.collide(players, purpleDinos, this.setGameOver, null, this);
+    this.physics.arcade.collide(players, fishes, this.setGameOver, null, this);
 
 
     if(this.level === 'ground') {
@@ -167,6 +175,11 @@ var state = {
       platforms.forEach(function(p){
         if(p.body.x < -800 || p.body.y < -48 ) {
           p.kill();
+        }
+      });
+      fishes.forEach(function(f) {
+        if(f.body.x < - 100) {
+          f.kill();
         }
       });
     }
@@ -228,6 +241,7 @@ var state = {
     clearInterval(platformFloatingInterval);
     clearInterval(purpleDinoInterval);
     clearInterval(orangeDinoInterval);
+    clearInterval(fishInterval);
 
     clearTimeout(waterTimeout);
     clearTimeout(groundTimeout);
@@ -240,8 +254,22 @@ var state = {
     water.removeAll();
     orangeDinos.removeAll();
     purpleDinos.removeAll();
+    fishes.removeAll();
     this.gameStarted = false;
     this.gameOver = false;
+    if(musicReset === true) {
+      musicLoop = true;
+      musicReset = false;
+      music.play();
+
+      music.onStop.add(function(){
+        if(musicLoop === true) {
+          music.play()
+        }  
+      }, this);
+    }
+
+
     if(musicReset === true) {
       musicLoop = true;
       musicReset = false;
@@ -428,6 +456,16 @@ var state = {
     this.purpleDino.body.immovable = true;
     this.purpleDino.body.velocity.x = -SPEED - 80;
   },
+  spawnFish: function() {
+    this.fish = fishes.create(700, 650, 'fish');
+    this.fish.animations.add('walk', [0,1], 10, true);
+    this.fish.animations.play('walk');
+    this.physics.arcade.enableBody(this.fish);
+    this.fish.body.immovable = true;
+    this.fish.body.velocity.y = -900;
+    this.fish.body.velocity.x = -SPEED;
+    this.fish.body.gravity.y = GRAVITY;
+  },
   levelWater: function() {
     this.level = 'water';
 
@@ -459,6 +497,9 @@ var state = {
       platformNegativeInterval = setInterval(function(){
         context.spawnNegativePlatform();
       }, 8000);
+      fishInterval = setInterval(function() {
+        context.spawnFish();
+      }, 3500);
     } 
   },
   levelGround: function() {
@@ -469,6 +510,7 @@ var state = {
     clearInterval(platformFallingInterval);
     clearInterval(platformNegativeInterval);
     clearInterval(waterInterval);
+    clearInterval(fishInterval);
 
 
     this.ground = platforms.create(800, game.world.height-64, 'ground');
