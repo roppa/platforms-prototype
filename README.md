@@ -1,5 +1,14 @@
 # Underground Robot #
 
+## How to Run Game
+> Navigate to your project in the terminal
+> npm install
+> Run server.js using node or nodemon
+> Get your IP address either in system preferences or using ifconfig in the terminal
+> Go to http://yourIPaddress:8080 
+> On your phone go to http://yourIPaddress:8080/controller2.html
+
+
 ## Real-Time Multi-Player Web Game ##
 
 ## Summary ##
