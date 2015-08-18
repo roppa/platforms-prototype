@@ -694,7 +694,7 @@ var state = {
       }, 8000);
       fishInterval = setInterval(function() {
         context.spawnFish();
-      }, 3500);
+      }, 4900);
     } 
   },
 
